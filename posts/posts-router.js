@@ -40,8 +40,6 @@ router.get('/:id', async (req,res) =>{
     }
 });
 
-
-
 router.post('/', async (req, res) => {
     const postInfo = req.body;
     try {
@@ -61,7 +59,6 @@ router.post('/', async (req, res) => {
 
 router.get('/:id/comments', async (req, res) => {
   const id = req.params.id
-  const posts = await Posts.findById(id)
 
   try {
       const comments = await Posts.findPostComments(id)
@@ -75,8 +72,6 @@ router.get('/:id/comments', async (req, res) => {
     res.status(500).json({ errorMessage: `Server error: ${err}` })
   }
 });
-
-
 
 router.post('/:id/comments', async (req,res) => {
     const id = req.params.id
@@ -101,7 +96,6 @@ router.post('/:id/comments', async (req,res) => {
     }
 });
 
-
 router.delete('/:id', async (req,res) => {
     try {
         const post = await Posts.remove(req.params.id);
@@ -109,7 +103,7 @@ router.delete('/:id', async (req,res) => {
         if (post) {
             res.status(200).json(req.body);
         } else {
-            res.status(400).json({
+            res.status(404).json({
                 message: "The post with the specified ID does not exist."
             });
         }
@@ -120,5 +114,28 @@ router.delete('/:id', async (req,res) => {
         });
     }
 });
+
+
+router.put('/:id', async (req, res) => {
+  const id = req.params.id
+  const post = await db.findById(id)
+  const editPost = req.body
+
+  try {
+    if (post) {
+      if (editPost.title && editPost.contents) {
+        const edited = await db.update(id, editPost)
+        res.status(200).json(edited)
+      } else {
+        res.status(400).json({ errorMessage: 'Please provide title and contents for the post.' })
+      }
+    } else {
+      res.status(404).json({ message: 'The post with the specified ID does not exist.' })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'The post information could not be modified.' })
+  }
+})
 
 module.exports = router;
