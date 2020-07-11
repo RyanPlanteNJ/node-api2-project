@@ -43,7 +43,7 @@ router.get('/:id', async (req,res) =>{
 router.post('/', async (req, res) => {
     const postInfo = req.body;
     try {
-        if (postInfo.title !== '' && postInfo.contents !== '') {
+        if (postInfo.title  && postInfo.contents) {
             const posts = await Posts.insert(postInfo)
             res.status(201).json(posts);
         } else {
@@ -62,7 +62,7 @@ router.get('/:id/comments', async (req, res) => {
 
   try {
       const comments = await Posts.findPostComments(id)
-      if (comments) {
+      if (comments.text !== '') {
         res.status(200).json(comments)
       } else {
       res.status(404).json({ errorMessage: 'The post requested cannot be found' })
@@ -77,7 +77,7 @@ router.post('/:id/comments', async (req,res) => {
     const id = req.params.id
     const commentInfo = {...req.body, post_id: id};
     try {
-        if (commentInfo) {
+        if (commentInfo.text !== "") {
             const comments = await Posts.findById(id)
             if (comments){
                 const postedComment = await Posts.insertComment(commentInfo)
