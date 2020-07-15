@@ -7,13 +7,12 @@ const router = express.Router();
 
 
 router.get('/', async (req, res) => {
-   try {
-       const posts = await Posts.find();
-       if (posts.length > 0) {
-           res.status(200).json(posts);
-       } else {
-           res.status(404).json({message: 'No posts available'})
-       }
+  try {
+    const posts = await Posts.find();
+    if (posts.length > 0) {
+      res.status(200).json(posts);
+    } else { res.status(404).json({ message: 'No posts available' });
+    }
    } catch (error) {
        console.log(error);
        res.status(500).json({
@@ -58,7 +57,7 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/:id/comments', async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
 
   try {
       const comments = await Posts.findPostComments(id)
@@ -74,7 +73,7 @@ router.get('/:id/comments', async (req, res) => {
 });
 
 router.post('/:id/comments', async (req,res) => {
-    const id = req.params.id
+    const id = req.params.id;
     const commentInfo = {...req.body, post_id: id};
     try {
         if (commentInfo.text !== "") {
@@ -99,7 +98,7 @@ router.post('/:id/comments', async (req,res) => {
 router.delete('/:id', async (req,res) => {
     try {
         const post = await Posts.remove(req.params.id);
-  
+
         if (post) {
             res.status(200).json(req.body);
         } else {
@@ -117,14 +116,14 @@ router.delete('/:id', async (req,res) => {
 
 
 router.put('/:id', async (req, res) => {
-  const id = req.params.id
-  const post = await db.findById(id)
-  const editPost = req.body
+  const id = req.params.id;
+  const post = await Posts.findById(id);
+  const editPost = req.body;
 
   try {
     if (post) {
-      if (editPost.title && editPost.contents) {
-        const edited = await db.update(id, editPost)
+      if (editPost.title && editPost.contents ) {
+        const edited = await Posts.update(id, editPost)
         res.status(200).json(edited)
       } else {
         res.status(400).json({ errorMessage: 'Please provide title and contents for the post.' })
